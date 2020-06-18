@@ -1,0 +1,175 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <title>新規登録＆ログイン画面</title>
+  <link rel="stylesheet" href="milligram.min.css" />
+  <style>
+    html,
+    body {
+      height: 100%;
+      width: 700px;
+      margin-top: 30px;
+      margin-right: auto;
+      margin-left: auto;
+    }
+
+    .header-title {
+      padding-top: 20px;
+      padding-bottom: 20px;
+      margin-top: 30px;
+      margin-bottom: 30px;
+      font-size: 46px;
+      border-bottom: 1px solid #aaa;
+      text-align: center;
+      color: blue;
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 18px;
+    }
+
+    .container {
+      width: 100%;
+      height: 100px;
+      text-align: center;
+      margin-top: 100px;
+      padding-top: 10px;
+      padding-bottom: 10px;
+      background-color: ghostwhite;
+    }
+
+    .hide {
+      display: none;
+    }
+
+    #info {
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      color: blue;
+    }
+
+    .qs{
+      text-align: right;
+
+    }
+
+
+  </style>
+</head>
+
+<body>
+  <h1 class="header-title">JIDAI</h1>
+  <p class="subtitle">智慧とアイデアで地域のじだいをつくる<br>ビジネスコミュニティへようこそ</p>
+
+  <div class="container">
+    <p>新規登録＆ログインはこちら</p>
+    <div id="input-area">
+      <input id="email" type="email" autocomplete="off" placeholder="メールアドレスを入力" required />
+      <input id="password" type="password" autocomplete="off" placeholder="パスワードを入力" required />
+      <button id="login">ログイン</button>
+      <button id="newuser">新規登録</button>
+    </div>
+    <button id="logout" class="hide">ログアウト</button>
+  </div>
+  <div class="qs">
+    <a href="data_csv_input.php">アンケートご協力のお願い</a>
+  </div>
+
+  <!-- ログイン成功したらテキストに表示 -->
+  <p id="info"></p>
+
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <!-- 以下にfirebaseのコードを貼り付けよう -->
+
+  <!-- The core Firebase JS SDK is always required and must be listed first -->
+  <script src="https://www.gstatic.com/firebasejs/7.14.5/firebase.js"></script>
+
+  <!-- TODO: Add SDKs for Firebase products that you want to use
+         https://firebase.google.com/docs/web/setup#available-libraries -->
+
+  <script>
+    // Your web app's Firebase configuration
+    var firebaseConfig = {
+      apiKey: "AIzaSyBlhx4kU1yz1sFv-7L68hdLNfV0koDjPII",
+      authDomain: "chatapp06-01.firebaseapp.com",
+      databaseURL: "https://chatapp06-01.firebaseio.com",
+      projectId: "chatapp06-01",
+      storageBucket: "chatapp06-01.appspot.com",
+      messagingSenderId: "78641288568",
+      appId: "1:78641288568:web:477ecfb9c9ee5c5671248d"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore().collection("chatapp06-01");
+  </script>
+
+  <script>
+    let inputarea = document.getElementById('input-area');
+    let newuser = document.getElementById('newuser');
+    let login = document.getElementById('login');
+    let logout = document.getElementById('logout');
+    let info = document.getElementById('info');
+
+    //新規ユーザー登録を行う
+    $("#newuser").on('click', function () {
+      let email = document.getElementById('email').value;
+      let password = document.getElementById('password').value;
+
+      //登録が失敗した時の処理
+      firebase.auth().createUserWithEmailAndPassword(email, password)
+        .catch(function (error) {
+          alert('登録できませんでした' + error.message + '）');
+        });
+    });
+
+    //ログインを行う。間違っていたら、ログインできないと表示
+    $("#login").on('click', function () {
+      let email = document.getElementById('email').value;
+      let password = document.getElementById('password').value;
+
+      firebase.auth().signInWithEmailAndPassword(email, password)
+        .catch(function (error) {
+          alert('ログインできませんでした（' + error.message + '）');
+        });
+    });
+
+    //ログアウトを行う
+    $("#logout").on('click', function () {
+      firebase.auth().signOut();
+    });
+
+    //認証を確認する
+    firebase.auth().onAuthStateChanged(function (user) {
+      if (user) {
+        loginDisplay();
+      }
+      else {
+        logoutDisplay();
+      }
+    });
+
+    function loginDisplay() {
+      logout.classList.remove('hide');
+      inputarea.classList.add('hide');
+
+      info.textContent = "ログイン中";
+    }
+
+    function logoutDisplay() {
+      logout.classList.add('hide');
+      inputarea.classList.remove('hide');
+
+      info.textContent = "";
+    }
+
+  </script>
+
+</body>
+
+</html>
